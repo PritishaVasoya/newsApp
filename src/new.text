@@ -1,0 +1,71 @@
+const editFolder = (id, newName) => {
+  const updatedFolders = folders.map((folder) => {
+    if (folder.id === id) {
+      return { ...folder, name: newName };
+    }
+    return folder;
+  });
+
+  setFolders(updatedFolders);
+};
+
+<Folder
+  folders={folders}
+  parentId={null}
+  addFolder={addFolder}
+  editFolder={editFolder}
+/>
+
+import React, { useState } from "react";
+
+export default function Folder({ folders, parentId, addFolder, editFolder }) {
+
+  const [editId, setEditId] = useState(null);
+  const [name, setName] = useState("");
+
+  const childFolders = folders.filter(
+    (folder) => folder.parentId === parentId
+  );
+
+  return (
+    <div style={{ marginLeft: "20px" }}>
+      {childFolders.map((folder) => (
+        <div key={folder.id}>
+
+          {editId === folder.id ? (
+            <>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <button onClick={() => {
+                editFolder(folder.id, name);
+                setEditId(null);
+              }}>
+                Save
+              </button>
+            </>
+          ) : (
+            <>
+              📁 {folder.name}
+              <button onClick={() => {
+                setEditId(folder.id);
+                setName(folder.name);
+              }}>
+                Edit
+              </button>
+            </>
+          )}
+
+          <Folder
+            folders={folders}
+            parentId={folder.id}
+            addFolder={addFolder}
+            editFolder={editFolder}
+          />
+
+        </div>
+      ))}
+    </div>
+  );
+}
